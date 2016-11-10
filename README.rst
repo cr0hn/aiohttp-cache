@@ -1,7 +1,7 @@
 aiohttp-cache
 =============
 
-.. image::  https://raw.github.com/cr0hn/aiohttp-cache/master/docs/_static/aiohttp-cache-128x128.png
+.. image::  https://raw.githubusercontent.com/cr0hn/aiohttp-cache/master/doc/source/_static/aiohttp-cache-128x128.png
     :height: 64px
     :width: 64px
     :alt: aiohttp-cache logo
