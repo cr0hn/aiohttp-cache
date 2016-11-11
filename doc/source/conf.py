@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# API-Test documentation build configuration file, created by
+# aiohttp-cache documentation build configuration file, created by
 # sphinx-quickstart on Mon Oct 10 23:43:03 2016.
 #
 # This file is execfile()d with the current directory set to its
@@ -243,7 +243,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'API-Test.tex', u'API-Test Documentation',
+    (master_doc, 'API-Test.tex', u'aiohttp-cacheDocumentation',
      u'Daniel Garcia - cr0hn', 'manual'),
 ]
 
@@ -287,7 +287,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'API-Test', u'API-Test Documentation',
+    (master_doc, 'API-Test', u'aiohttp-cacheDocumentation',
      author, 'API-Test', 'One line description of project.',
      'Miscellaneous'),
 ]
