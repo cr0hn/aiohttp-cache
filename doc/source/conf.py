@@ -51,7 +51,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'API-Test'
+project = u'aiohttp-cache'
 copyright = u'2016, Daniel Garcia - cr0hn'
 author = u'Daniel Garcia - cr0hn'
 
@@ -221,7 +221,7 @@ html_search_language = 'en'
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'API-Testdoc'
+htmlhelp_basename = 'aiohttp-cachedoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -243,7 +243,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'API-Test.tex', u'aiohttp-cacheDocumentation',
+    (master_doc, 'aiohttp-cache.tex', u'aiohttp-cacheDocumentation',
      u'Daniel Garcia - cr0hn', 'manual'),
 ]
 
@@ -287,8 +287,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'API-Test', u'aiohttp-cacheDocumentation',
-     author, 'API-Test', 'One line description of project.',
+    (master_doc, 'aiohttp-cache', u'aiohttp-cacheDocumentation',
+     author, 'aiohttp-cache', 'One line description of project.',
      'Miscellaneous'),
 ]
 
