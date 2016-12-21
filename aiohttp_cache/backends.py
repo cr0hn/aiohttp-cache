@@ -32,17 +32,17 @@ class BaseCache(object):
         raise NotImplementedError()
     
     def make_key(self, request: aiohttp.web.Request) -> str:
-        key = "{method}{host}{path}{postdata}{ctype}".format(method=request.method,
-                                                             path=request.path_qs,
-                                                             host=request.host,
-                                                             postdata="".join(request.post()),
-                                                             ctype=request.content_type)
+        key = "{method}#{host}#{path}#{postdata}#{ctype}".format(method=request.method,
+                                                                 path=request.rel_url.query_string,
+                                                                 host=request.url.host,
+                                                                 postdata="".join(request.post()),
+                                                                 ctype=request.content_type)
         
         return key
-
+    
     def _calculate_expires(self, expires: int) -> int:
         return self.expiration if expires is None or expires < 0 else expires
-    
+
 
 class _Config:
     def __init__(self,
@@ -68,7 +68,7 @@ class RedisConfig(_Config):
         self.key_prefix = key_prefix or ''
         
         super(RedisConfig, self).__init__()
-        
+
 
 class RedisCache(BaseCache):
     
@@ -117,7 +117,7 @@ class RedisCache(BaseCache):
             redis_value = await redis.get(self.key_prefix + key)
             
             return self.load_object(redis_value)
-
+    
     async def set(self, key: str, value: dict, expires: int = 3000):
         dump = self.dump_object(value)
         
@@ -177,7 +177,7 @@ class MemoryCache(BaseCache):
             return cached[0]
         except KeyError:
             return None
-
+    
     async def set(self, key: str, value: dict, expires: int = 3000):
         _expires = self._calculate_expires(expires)
         

@@ -5,6 +5,10 @@ recursive-exclude * *.pyc
 recursive-exclude * *.pyo
 recursive-exclude * *.orig
 recursive-exclude * .DS_Store
+recursive-exclude * tests
+recursive-exclude * examples
+global-exclude tests/*
+global-exclude examples/*
 global-exclude __pycache__/*
 global-exclude .deps/*
 global-exclude *.so
