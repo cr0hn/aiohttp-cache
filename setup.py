@@ -66,10 +66,10 @@ class PyTest(TestCommand):
         raise SystemExit(errno)
 
 setup(
-    name='aiohttp-cache',
+    name='tambel_aiohttp-cache',
     version=version,
     install_requires=required,
-    url='https://github.com/cr0hn/aiohttp-cache',
+    url='https://github.com/cr0hn/tambel_aiohttp_cache',
     license='BSD',
     author='Daniel Garcia (cr0hn)',
     author_email='cr0hn@cr0hn.com',
