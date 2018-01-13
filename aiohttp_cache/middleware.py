@@ -1,4 +1,4 @@
-from aiohttp.web_reqrep import Response
+from aiohttp.web_response import Response
 
 async def cache_middleware(app, handler):
     async def middleware_handler(request):
