@@ -13,7 +13,7 @@ async def cache_middleware(app, handler):
             
             cache_backend = app["cache"]
             
-            key = cache_backend.make_key(request)
+            key = await cache_backend.make_key(request)
 
             cached_response = await cache_backend.get(key)
             if cached_response:
