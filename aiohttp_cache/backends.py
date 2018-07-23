@@ -31,11 +31,11 @@ class BaseCache(object):
     async def set(self, key: str, value: dict, expires: int = 3000):
         raise NotImplementedError()
     
-    def make_key(self, request: aiohttp.web.Request) -> str:
+    async def make_key(self, request: aiohttp.web.Request) -> str:
         key = "{method}#{host}#{path}#{postdata}#{ctype}".format(method=request.method,
-                                                                 path=request.rel_url.query_string,
+                                                                 path=request.rel_url.path_qs,
                                                                  host=request.url.host,
-                                                                 postdata="".join(request.post()),
+                                                                 postdata="".join(await request.post()),
                                                                  ctype=request.content_type)
         
         return key
