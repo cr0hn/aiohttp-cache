@@ -134,7 +134,7 @@ class RedisCache(BaseCache):
     
     async def delete(self, key: str):
         async with self._redis_pool.get() as redis:
-            await redis.execute('DELETE', self.key_prefix + key)
+            await redis.execute('DEL', self.key_prefix + key)
     
     async def has(self, key: str) -> bool:
         async with self._redis_pool.get() as redis:
