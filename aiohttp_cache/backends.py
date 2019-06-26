@@ -145,7 +145,7 @@ class RedisCache(BaseCache):
             if self.key_prefix:
                 keys = await redis.execute('KEYS', self.key_prefix + '*')
                 if keys:
-                    await redis.execute('DELETE', *keys)
+                    await redis.execute('DEL', *keys)
             else:
                 await redis.flushdb()
 
