@@ -114,7 +114,7 @@ class RedisCache(BaseCache):
     
     async def get(self, key: str):
         async with self._redis_pool.get() as redis:
-            redis_value = await redis.get(self.key_prefix + key)
+            redis_value = await redis.execute('GET', self.key_prefix + key)
             
             return self.load_object(redis_value)
     
@@ -125,28 +125,27 @@ class RedisCache(BaseCache):
         
         if _expires == 0:
             async with self._redis_pool.get() as redis:
-                await redis.set(name=self.key_prefix + key,
-                                value=dump)
+                await redis.execute('SET', name=self.key_prefix + key,
+                                    value=dump)
         else:
             async with self._redis_pool.get() as redis:
-                await redis.setex(key=self.key_prefix + key,
-                                  seconds=_expires,
-                                  value=dump)
+                await redis.execute('SETEX', key=self.key_prefix + key,
+                                    seconds=_expires, value=dump)
     
     async def delete(self, key: str):
         async with self._redis_pool.get() as redis:
-            await redis.delete(self.key_prefix + key)
+            await redis.execute('DEL', self.key_prefix + key)
     
     async def has(self, key: str) -> bool:
         async with self._redis_pool.get() as redis:
-            return await redis.exists(self.key_prefix + key)
+            return await redis.execute('EXISTS', self.key_prefix + key)
     
     async def clear(self):
         async with self._redis_pool.get() as redis:
             if self.key_prefix:
-                keys = await redis.keys(self.key_prefix + '*')
+                keys = await redis.execute('KEYS', self.key_prefix + '*')
                 if keys:
-                    await redis.delete(*keys)
+                    await redis.execute('DELETE', *keys)
             else:
                 await redis.flushdb()
 
