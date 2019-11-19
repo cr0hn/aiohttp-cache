@@ -125,12 +125,12 @@ class RedisCache(BaseCache):
         
         if _expires == 0:
             async with self._redis_pool.get() as redis:
-                await redis.execute('SET', name=self.key_prefix + key,
-                                    value=dump)
+                await redis.execute('SET', self.key_prefix + key,
+                                    dump)
         else:
             async with self._redis_pool.get() as redis:
-                await redis.execute('SETEX', key=self.key_prefix + key,
-                                    seconds=_expires, value=dump)
+                await redis.execute('SETEX', self.key_prefix + key,
+                                    _expires, dump)
     
     async def delete(self, key: str):
         async with self._redis_pool.get() as redis:
