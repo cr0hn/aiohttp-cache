@@ -1,0 +1,21 @@
+version: '3.3'
+services:
+  tests:
+    environment:
+      CACHE_URL: ${CACHE_URL}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      cache_from:
+        - &img_tag aiohttp-cache:latest
+    image: *img_tag
+    volumes:
+      - .:/aiohttp-cache
+    depends_on:
+      - redis
+    command: pytest
+
+  redis:
+    image: "redis:5.0.6"
+    ports:
+      - "63790:6379"

@@ -88,7 +88,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Topic :: Security',
     ],
-    tests_require=['pytest', 'pytest-aiohttp'],
+    tests_require=['pytest', 'pytest-aiohttp', 'pytest-cov'],
     cmdclass=dict(test=PyTest)
 )
 
