@@ -1,7 +1,9 @@
+import enum
 import time
 import pickle
 import asyncio
 import warnings
+from typing import Tuple
 
 import aiohttp.web
 
@@ -11,11 +13,33 @@ except ImportError:
     warnings.showwarning("aioredis library not found. Redis cache backend not available")
 
 
+class AvailableKeys(enum.Enum):
+    method = "method"
+    host = "host"
+    path = "path"
+    postdata = "postdata"
+    ctype = "ctype"
+    json = "json"
+
+
+DEFAULT_KEY_PATTERN = (
+                AvailableKeys.method,
+                AvailableKeys.host,
+                AvailableKeys.path,
+                AvailableKeys.postdata,
+                AvailableKeys.ctype,
+            )
+
+
 class BaseCache(object):
     
-    def __init__(self, expiration: int = 300):
+    def __init__(
+            self, expiration: int = 300, 
+            key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN
+    ):
         self.expiration = expiration
-    
+        self.key_pattern = key_pattern
+
     async def get(self, key: str) -> object:
         raise NotImplementedError()
     
@@ -32,12 +56,17 @@ class BaseCache(object):
         raise NotImplementedError()
     
     async def make_key(self, request: aiohttp.web.Request) -> str:
-        key = "{method}#{host}#{path}#{postdata}#{ctype}".format(method=request.method,
-                                                                 path=request.rel_url.path_qs,
-                                                                 host=request.url.host,
-                                                                 postdata="".join(await request.post()),
-                                                                 ctype=request.content_type)
-        
+        K = AvailableKeys
+        known_keys = {
+            K.method: request.method,
+            K.path: request.rel_url.path_qs,
+            K.host: request.url.host,
+            K.postdata: "".join(await request.post()),
+            K.ctype: request.content_type,
+            K.json: await request.text()
+        }
+        key = "#".join(known_keys[key] for key in self.key_pattern)
+
         return key
     
     def _calculate_expires(self, expires: int) -> int:
@@ -60,7 +89,8 @@ class RedisConfig(_Config):
                  port: int = 6379,
                  db: int = 0,
                  password: str = None,
-                 key_prefix: str = None):
+                 key_prefix: str = None,
+                 ):
         self.host = host
         self.port = port
         self.password = password
@@ -75,7 +105,10 @@ class RedisCache(BaseCache):
     def __init__(self,
                  config: RedisConfig,
                  *,
-                 loop: asyncio.BaseEventLoop = None):
+                 loop: asyncio.BaseEventLoop = None,
+                 expiration: int = 300,
+                 key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN
+                 ):
         """
         
         :param loop:
@@ -83,11 +116,13 @@ class RedisCache(BaseCache):
         """
         BaseCache.__init__(self, config.expiration)
         _loop = loop or asyncio.get_event_loop()
-        
+
         self._redis_pool = _loop.run_until_complete(aioredis.create_pool((config.host, config.port),
                                                                          db=config.db,
                                                                          password=config.password))
         self.key_prefix = config.key_prefix
+        super().__init__(expiration=expiration, key_pattern=key_pattern)
+
     
     def dump_object(self, value: dict) -> bytes:
         t = type(value)
@@ -154,12 +189,14 @@ class RedisCache(BaseCache):
 # MEMORY BACKEND
 # --------------------------------------------------------------------------
 class MemoryCache(BaseCache):
-    
+
     def __init__(self,
                  *,
-                 expiration=300):
-        super().__init__(expiration=expiration)
-        
+                 expiration=300,
+                 key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN
+                 ):
+        super().__init__(expiration=expiration, key_pattern=key_pattern)
+
         #
         # Cache format:
         # (cached object, expire date)
@@ -210,4 +247,4 @@ class MemoryCache(BaseCache):
             pass
 
 
-__all__ = ("MemoryCache", "RedisCache", "RedisConfig")
+__all__ = ("MemoryCache", "RedisCache", "RedisConfig", "AvailableKeys", "DEFAULT_KEY_PATTERN")
