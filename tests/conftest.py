@@ -26,11 +26,12 @@ def build_application(
     cache_type="memory",
     key_pattern=DEFAULT_KEY_PATTERN,
     loop: asyncio.AbstractEventLoop = None,
+    encrypt_key=True,
 ) -> web.Application:
     app = web.Application()
     if cache_type == "memory":
         setup_cache(
-            app, key_pattern=key_pattern,
+            app, key_pattern=key_pattern, encrypt_key=encrypt_key,
         )
     elif cache_type == "redis":
         url = yarl.URL(env.str("CACHE_URL"))
@@ -40,6 +41,7 @@ def build_application(
             cache_type=cache_type,
             backend_config=redis_config,
             key_pattern=key_pattern,
+            encrypt_key=encrypt_key,
         )
     else:
         raise ValueError("cache_type should be `memory` or `redis`")
@@ -80,7 +82,7 @@ def client_memory_cache_another_key(
     client_: TestClient = loop.run_until_complete(
         aiohttp_client(
             build_application(
-                cache_type="memory", key_pattern=(K.method, K.path, K.json)
+                cache_type="memory", key_pattern=(K.method, K.path, K.json), encrypt_key=False,
             )
         )
     )
@@ -99,7 +101,7 @@ def client_redis_cache_another_key(
     client_: TestClient = loop.run_until_complete(
         aiohttp_client(
             build_application(
-                cache_type="redis", key_pattern=(K.method, K.path, K.json)
+                cache_type="redis", key_pattern=(K.method, K.path, K.json), encrypt_key=False,
             )
         )
     )
