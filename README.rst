@@ -37,3 +37,9 @@ Source Code
 -----------
 
 The latest developer version is available in a github repository: https://github.com/cr0hn/aiohttp-cache
+
+Development Version
+-------------------
+
+1. cp .env.example .env
+2. docker-compose run tests
