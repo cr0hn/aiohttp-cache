@@ -3,8 +3,8 @@ import enum
 import pickle
 import time
 import warnings
-from _sha256 import sha256
-from typing import Tuple
+from _sha256 import sha256  # noqa
+from typing import Tuple  # noqa
 
 import aiohttp.web
 
@@ -57,18 +57,18 @@ class BaseCache(object):
     async def clear(self):
         raise NotImplementedError()
 
-    async def set(self, key: str, value: dict, expires: int = 3000):
+    async def set(self, key: str, value: dict, expires: int = 3000):  # noqa
         raise NotImplementedError()
 
     async def make_key(self, request: aiohttp.web.Request) -> str:
-        K = AvailableKeys
+        k = AvailableKeys
         known_keys = {
-            K.method: request.method,
-            K.path: request.rel_url.path_qs,
-            K.host: request.url.host,
-            K.postdata: "".join(await request.post()),
-            K.ctype: request.content_type,
-            K.json: await request.text(),
+            k.method: request.method,
+            k.path: request.rel_url.path_qs,
+            k.host: request.url.host,
+            k.postdata: "".join(await request.post()),
+            k.ctype: request.content_type,
+            k.json: await request.text(),
         }
         key = "#".join(known_keys[key] for key in self.key_pattern)
 
@@ -127,12 +127,16 @@ class RedisCache(BaseCache):
 
         self._redis_pool = _loop.run_until_complete(
             aioredis.create_pool(
-                (config.host, config.port), db=config.db, password=config.password
+                (config.host, config.port),
+                db=config.db,
+                password=config.password,
             )
         )
         self.key_prefix = config.key_prefix
         super().__init__(
-            expiration=expiration, key_pattern=key_pattern, encrypt_key=encrypt_key
+            expiration=expiration,
+            key_pattern=key_pattern,
+            encrypt_key=encrypt_key,
         )
 
     def dump_object(self, value: dict) -> bytes:
@@ -164,7 +168,7 @@ class RedisCache(BaseCache):
 
             return self.load_object(redis_value)
 
-    async def set(self, key: str, value: dict, expires: int = 3000):
+    async def set(self, key: str, value: dict, expires: int = 3000):  # noqa
         dump = self.dump_object(value)
 
         _expires = self._calculate_expires(expires)
@@ -174,7 +178,9 @@ class RedisCache(BaseCache):
                 await redis.execute("SET", self.key_prefix + key, dump)
         else:
             async with self._redis_pool.get() as redis:
-                await redis.execute("SETEX", self.key_prefix + key, _expires, dump)
+                await redis.execute(
+                    "SETEX", self.key_prefix + key, _expires, dump
+                )
 
     async def delete(self, key: str):
         async with self._redis_pool.get() as redis:
@@ -206,7 +212,9 @@ class MemoryCache(BaseCache):
         encrypt_key=True,
     ):
         super().__init__(
-            expiration=expiration, key_pattern=key_pattern, encrypt_key=encrypt_key
+            expiration=expiration,
+            key_pattern=key_pattern,
+            encrypt_key=encrypt_key,
         )
 
         #
@@ -226,7 +234,7 @@ class MemoryCache(BaseCache):
         except KeyError:
             return None
 
-    async def set(self, key: str, value: dict, expires: int = 3000):
+    async def set(self, key: str, value: dict, expires: int = 3000):  # noqa
         _expires = self._calculate_expires(expires)
 
         self._cache[key] = (value, int(time.time()) + _expires)
