@@ -2,20 +2,18 @@ import logging
 from typing import Tuple
 
 from aiohttp import web
-from envparse import env
 
 from aiohttp_cache import (  # noqa
     AvailableKeys,
-    DEFAULT_KEY_PATTERN,
     cache_middleware,
     MemoryCache,
     RedisConfig,
     RedisCache,
-    HTTPCache,
 )
+from aiohttp_cache.backends import DEFAULT_KEY_PATTERN
+from aiohttp_cache.exceptions import HTTPCache
 
 log = logging.getLogger("aiohttp")
-env.read_envfile(".env")
 
 
 def setup_cache(

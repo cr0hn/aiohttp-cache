@@ -10,11 +10,11 @@ from aiohttp_cache import (  # noqa
     setup_cache,
     cache,
     RedisConfig,
+)
+from aiohttp_cache.backends import (  # noqa
+    AvailableKeys as K,
     DEFAULT_KEY_PATTERN,
 )
-from aiohttp_cache.backends import AvailableKeys as K  # noqa
-
-env.read_envfile("/aiohttp-cache/.env")
 
 PAYLOAD = {"hello": "aiohttp_cache"}
 WAIT_TIME = 2
@@ -36,7 +36,7 @@ def build_application(
             app, key_pattern=key_pattern, encrypt_key=encrypt_key,
         )
     elif cache_type == "redis":
-        url = yarl.URL(env.str("CACHE_URL"))
+        url = yarl.URL(env.str("CACHE_URL", default="redis://redis:6379/0"))
         redis_config = RedisConfig(
             db=int(url.path[1:]), host=url.host, port=url.port
         )

@@ -41,5 +41,4 @@ The latest developer version is available in a github repository: https://github
 Development Version
 -------------------
 
-1. cp .env.example .env
-2. docker-compose run tests
+1. docker-compose run tests
