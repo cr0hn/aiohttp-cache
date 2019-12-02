@@ -1,0 +1,6 @@
+[flake8]
+application-import-names = platform_mcs
+import-order-style = smarkets
+inline-quotes = double
+max-complexity = 15
+multiline-quotes = double

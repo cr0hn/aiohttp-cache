@@ -1,4 +1,0 @@
-pytest
-pytest-aiohttp
-pytest-cov
-envparse
