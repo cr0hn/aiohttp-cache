@@ -36,7 +36,9 @@ def build_application(
             app, key_pattern=key_pattern, encrypt_key=encrypt_key,
         )
     elif cache_type == "redis":
-        url = yarl.URL(env.str("CACHE_URL", default="redis://redis:6379/0"))
+        url = yarl.URL(
+            env.str("CACHE_URL", default="redis://localhost:6379/0")
+        )
         redis_config = RedisConfig(
             db=int(url.path[1:]), host=url.host, port=url.port
         )
