@@ -1,7 +1,15 @@
-from .backends import *
-from .decorators import *
-from .exceptions import *
-from .middleware import *
-from .setup import *
+from .backends import AvailableKeys, MemoryCache, RedisCache, RedisConfig
+from .decorators import cache
+from .middleware import cache_middleware
+from .setup import setup_cache
 
-__version__ = "1.1.0"
+
+__all__ = (
+    "AvailableKeys",
+    "MemoryCache",
+    "RedisCache",
+    "RedisConfig",
+    "cache",
+    "cache_middleware",
+    "setup_cache",
+)

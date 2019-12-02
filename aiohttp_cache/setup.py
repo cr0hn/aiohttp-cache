@@ -4,9 +4,15 @@ from typing import Tuple
 from aiohttp import web
 from envparse import env
 
-from .backends import *
-from .exceptions import *
-from .middleware import *
+from aiohttp_cache import (  # noqa
+    AvailableKeys,
+    DEFAULT_KEY_PATTERN,
+    cache_middleware,
+    MemoryCache,
+    RedisConfig,
+    RedisCache,
+    HTTPCache,
+)
 
 log = logging.getLogger("aiohttp")
 env.read_envfile(".env")

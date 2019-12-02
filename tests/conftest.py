@@ -6,8 +6,13 @@ from aiohttp import web
 from aiohttp.test_utils import TestClient
 from envparse import env
 
-from aiohttp_cache import setup_cache, cache, RedisConfig, DEFAULT_KEY_PATTERN
-from aiohttp_cache.backends import AvailableKeys as K
+from aiohttp_cache import (  # noqa
+    setup_cache,
+    cache,
+    RedisConfig,
+    DEFAULT_KEY_PATTERN,
+)
+from aiohttp_cache.backends import AvailableKeys as K  # noqa
 
 env.read_envfile("/aiohttp-cache/.env")
 

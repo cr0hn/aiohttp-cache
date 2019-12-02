@@ -1,4 +1,4 @@
-class cache(object):
+class cache(object):  # noqa
     def __init__(self, expires: int = 3600, unless: bool = False):
         self.expires = expires
         self.unless = unless
