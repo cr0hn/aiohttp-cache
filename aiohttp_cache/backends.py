@@ -70,6 +70,8 @@ class BaseCache(object):
             k.ctype: request.content_type,
             k.json: await request.text(),
         }
+
+        assert all(key in k for key in known_keys)
         key = "#".join(known_keys[key] for key in self.key_pattern)
 
         if self.encrypt_key:
