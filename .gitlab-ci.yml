@@ -29,6 +29,9 @@ test:
 
 deploy:pypi:
   stage: deploy
+  image: python:3.7
+  before_script:
+    - pip install poetry
   script:
     - poetry publish -u $PYPI_U -p $PYPI_P --build
   only:
