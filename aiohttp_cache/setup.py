@@ -19,7 +19,7 @@ log = logging.getLogger("aiohttp")
 def setup_cache(
     app: web.Application,
     cache_type: str = "memory",
-    key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN,
+    key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
     encrypt_key=True,
     backend_config=None,
 ):
