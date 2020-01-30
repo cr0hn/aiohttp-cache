@@ -2,7 +2,7 @@ version: '3.3'
 services:
   tests:
     environment:
-      CACHE_URL: ${CACHE_URL}
+      CACHE_URL: redis://redis:6379/0
     build:
       context: .
       dockerfile: Dockerfile

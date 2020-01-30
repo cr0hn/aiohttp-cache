@@ -1,0 +1,38 @@
+image: tmaier/docker-compose:18.09
+services:
+  - docker:18.09-dind
+
+before_script:
+  - docker version
+  - docker-compose version
+
+after_script:
+  - docker images
+
+stages:
+  - lint
+  - test
+  - deploy
+
+lint:
+  stage: lint
+  image: python:3.7
+  before_script:
+    - pip install pre-commit
+  script:
+    - pre-commit run -av
+
+test:
+  stage: test
+  script:
+    - docker-compose run tests
+
+deploy:pypi:
+  stage: deploy
+  image: python:3.7
+  before_script:
+    - pip install poetry
+  script:
+    - poetry publish -u $PYPI_U -p $PYPI_P --build
+  only:
+    - master
