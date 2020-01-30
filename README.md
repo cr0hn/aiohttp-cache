@@ -1,8 +1,6 @@
 # Aiohttp-cache
-title: 'aiohttp-cache'
----
 
-![aiohttp-cache logo](https://raw.githubusercontent.com/cr0hn/aiohttp-cache/master/doc/source/_static/aiohttp-cache-128x128.png)
+![aiohttp-cache logo](https://raw.githubusercontent.com/cr0hn/aiohttp-cache/master/aiohttp-cache-128x128.png)
 
 
 # What's aiohttp-cache
