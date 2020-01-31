@@ -1,4 +1,4 @@
-FROM python:3.7 as base
+FROM python:3.8 as base
 
 FROM base as install-poetry
 RUN pip install poetry
