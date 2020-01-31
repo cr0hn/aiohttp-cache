@@ -1,6 +1,6 @@
 # 2.0.1 (31 Jan 2020)
 
-## Codebase improvements 
+## Codebase improvements
 - Supports python 3.8
 - Monthly maintenance update
 
@@ -12,12 +12,12 @@
 written to Redis
 
 ## Bug fix
-- Use new style aiohttp middlewares 
+- Use new style aiohttp middlewares
 
-## Codebase improvements 
+## Codebase improvements
 - Use poetry
 - Use pre-commit linters
-- Add integration tests including real calls 
+- Add integration tests including real calls
 to redis backend
 - Use gitlab ci
 
