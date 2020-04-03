@@ -2,18 +2,11 @@ import asyncio
 import enum
 import pickle
 import time
-import warnings
 from _sha256 import sha256  # noqa
 from typing import Tuple  # noqa
 
 import aiohttp.web
-
-try:
-    import aioredis
-except ImportError:
-    warnings.showwarning(
-        "aioredis library not found. Redis cache backend not available"
-    )
+import aioredis
 
 
 class AvailableKeys(enum.Enum):
