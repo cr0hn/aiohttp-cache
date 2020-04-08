@@ -16,7 +16,7 @@ show_missing = true
 
 [tool.poetry]
 name = "aiohttp-cache"
-version = "2.0.1"
+version = "2.0.2"
 description = "A cache system for aiohttp server"
 authors = ["Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>"]
 maintainers = [

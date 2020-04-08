@@ -1,3 +1,9 @@
+# 2.0.2 (8 Apr 2020)
+
+## Bug fix
+- Fixed #22 when chache wasn't worked if other middlewares
+appended
+
 # 2.0.1 (31 Jan 2020)
 
 ## Codebase improvements
