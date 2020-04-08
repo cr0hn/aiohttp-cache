@@ -3,10 +3,10 @@ from aiohttp.web_response import Response
 
 
 def get_original_handler(handler):
-    if hasattr(handler, 'cache_enable'):
+    if hasattr(handler, "cache_enable"):
         return handler
-    elif hasattr(handler, 'keywords'):
-        return get_original_handler(handler.keywords['handler'])
+    elif hasattr(handler, "keywords"):
+        return get_original_handler(handler.keywords["handler"])
 
 
 @web.middleware
