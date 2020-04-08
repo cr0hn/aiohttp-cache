@@ -2,13 +2,23 @@ from aiohttp import web
 from aiohttp.web_response import Response
 
 
+def get_original_handler(handler):
+    if hasattr(handler, 'cache_enable'):
+        return handler
+    elif hasattr(handler, 'keywords'):
+        return get_original_handler(handler.keywords['handler'])
+
+
 @web.middleware
 async def cache_middleware(request, handler):
-    if getattr(handler, "cache_enable", False):
+
+    original_handler = get_original_handler(handler)
+
+    if getattr(original_handler, "cache_enable", False):
         #
         # Cache is disabled?
         #
-        if getattr(handler, "cache_unless", False) is True:
+        if getattr(original_handler, "cache_unless", False) is True:
             return await handler(request)
 
         cache_backend = request.app["cache"]
@@ -30,7 +40,7 @@ async def cache_middleware(request, handler):
             "body": original_response.body,
         }
 
-        expires = getattr(handler, "cache_expires", 300)
+        expires = getattr(original_handler, "cache_expires", 300)
 
         await cache_backend.set(key, data, expires)
 
