@@ -35,4 +35,4 @@ deploy:pypi:
   script:
     - poetry publish -u $PYPI_U -p $PYPI_P --build
   only:
-    - master
+    - releases
