@@ -27,7 +27,9 @@ WAIT_TIME = 2
 
 
 @cache()
-async def some_long_running_view(request: web.Request) -> web.Response:
+async def some_long_running_view(
+    request: web.Request,
+) -> web.Response:
     await asyncio.sleep(WAIT_TIME)
     payload = await request.json()
     return web.json_response(payload)
@@ -63,14 +65,18 @@ WAIT_TIME = 2
 
 
 @cache()
-async def some_long_running_view(request: web.Request) -> web.Response:
+async def some_long_running_view(
+    request: web.Request,
+) -> web.Response:
     await asyncio.sleep(WAIT_TIME)
     payload = await request.json()
     return web.json_response(payload)
 
 
 app = web.Application()
-url = yarl.URL(env.str("CACHE_URL", default="redis://localhost:6379/0"))
+url = yarl.URL(
+    env.str("CACHE_URL", default="redis://localhost:6379/0")
+)
 setup_cache(
     app,
     cache_type="redis",
@@ -106,14 +112,20 @@ import asyncio
 
 from aiohttp import web
 
-from aiohttp_cache import setup_cache, cache, AvailableKeys  # noqa
+from aiohttp_cache import (
+    setup_cache,
+    cache,
+    AvailableKeys,
+)  # noqa
 
 PAYLOAD = {"hello": "aiohttp_cache"}
 WAIT_TIME = 2
 
 
 @cache()
-async def some_long_running_view(request: web.Request) -> web.Response:
+async def some_long_running_view(
+    request: web.Request,
+) -> web.Response:
     await asyncio.sleep(WAIT_TIME)
     payload = await request.json()
     return web.json_response(payload)

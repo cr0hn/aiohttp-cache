@@ -1,14 +1,14 @@
 import logging
-from typing import Tuple
+from typing import Optional, Tuple, Union
 
 from aiohttp import web
 
 from aiohttp_cache import (  # noqa
     AvailableKeys,
-    cache_middleware,
     MemoryCache,
-    RedisConfig,
     RedisCache,
+    RedisConfig,
+    cache_middleware,
 )
 from aiohttp_cache.backends import DEFAULT_KEY_PATTERN
 from aiohttp_cache.exceptions import HTTPCache
@@ -25,7 +25,7 @@ def setup_cache(
 ):
     app.middlewares.append(cache_middleware)
 
-    _cache_backend = None
+    _cache_backend: Optional[Union[MemoryCache, RedisCache]] = None
     if cache_type.lower() == "memory":
         _cache_backend = MemoryCache(
             key_pattern=key_pattern, encrypt_key=encrypt_key
