@@ -6,15 +6,8 @@ from aiohttp import web
 from aiohttp.test_utils import TestClient
 from envparse import env
 
-from aiohttp_cache import (  # noqa
-    setup_cache,
-    cache,
-    RedisConfig,
-)
-from aiohttp_cache.backends import (  # noqa
-    AvailableKeys as K,
-    DEFAULT_KEY_PATTERN,
-)
+from aiohttp_cache import RedisConfig, cache, setup_cache
+from aiohttp_cache.backends import DEFAULT_KEY_PATTERN, AvailableKeys
 
 PAYLOAD = {"hello": "aiohttp_cache"}
 WAIT_TIME = 2
@@ -87,13 +80,17 @@ def client_redis_cache(
 
 @pytest.fixture
 def client_memory_cache_another_key(
-    loop: asyncio.AbstractEventLoop, aiohttp_client
+    loop: asyncio.AbstractEventLoop, aiohttp_client,
 ) -> TestClient:
     client_: TestClient = loop.run_until_complete(
         aiohttp_client(
             build_application(
                 cache_type="memory",
-                key_pattern=(K.method, K.path, K.json),
+                key_pattern=(
+                    AvailableKeys.method,
+                    AvailableKeys.path,
+                    AvailableKeys.json,
+                ),
                 encrypt_key=False,
             )
         )
@@ -108,13 +105,17 @@ def client_memory_cache_another_key(
 
 @pytest.fixture
 def client_redis_cache_another_key(
-    loop: asyncio.AbstractEventLoop, aiohttp_client
+    loop: asyncio.AbstractEventLoop, aiohttp_client,
 ) -> TestClient:
     client_: TestClient = loop.run_until_complete(
         aiohttp_client(
             build_application(
                 cache_type="redis",
-                key_pattern=(K.method, K.path, K.json),
+                key_pattern=(
+                    AvailableKeys.method,
+                    AvailableKeys.path,
+                    AvailableKeys.json,
+                ),
                 encrypt_key=False,
             )
         )

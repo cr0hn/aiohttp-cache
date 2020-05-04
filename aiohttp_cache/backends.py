@@ -2,8 +2,8 @@ import asyncio
 import enum
 import pickle
 import time
-from _sha256 import sha256  # noqa
-from typing import Tuple  # noqa
+from _sha256 import sha256
+from typing import Dict, Tuple
 
 import aiohttp.web
 import aioredis
@@ -31,7 +31,7 @@ class BaseCache(object):
     def __init__(
         self,
         expiration: int = 300,
-        key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN,
+        key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
         encrypt_key=True,
     ):
         self.encrypt_key = encrypt_key
@@ -109,7 +109,7 @@ class RedisCache(BaseCache):
         *,
         loop: asyncio.BaseEventLoop = None,
         expiration: int = 300,
-        key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN,
+        key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
         encrypt_key=True,
     ):
         """
@@ -203,7 +203,7 @@ class MemoryCache(BaseCache):
         self,
         *,
         expiration=300,
-        key_pattern: Tuple[AvailableKeys] = DEFAULT_KEY_PATTERN,
+        key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
         encrypt_key=True,
     ):
         super().__init__(
@@ -216,7 +216,7 @@ class MemoryCache(BaseCache):
         # Cache format:
         # (cached object, expire date)
         #
-        self._cache = {}
+        self._cache: Dict[str, Tuple[dict, int]] = {}
 
     async def get(self, key: str):
         # Update the keys
