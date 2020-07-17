@@ -2,7 +2,7 @@ import asyncio
 import enum
 import pickle
 import time
-from _sha256 import sha256
+from hashlib import sha256
 from typing import Dict, Tuple
 
 import aiohttp.web
