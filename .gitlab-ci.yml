@@ -1,6 +1,6 @@
-image: tmaier/docker-compose:18.09
+image: tmaier/docker-compose:19.03
 services:
-  - docker:18.09-dind
+  - docker:19.03-dind
 
 before_script:
   - docker version
