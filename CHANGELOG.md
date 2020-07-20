@@ -1,3 +1,13 @@
+# 2.1.0 (20 Jul 2020)
+
+## Fixes
+- using sha256 from hashlib see
+(https://github.com/cr0hn/aiohttp-cache/pull/26)
+
+## Features
+- Supports python 3.6, 3.7 and 3.8
+- Monthly maintenance update
+
 # 2.0.2 (8 Apr 2020)
 
 ## Bug fix
