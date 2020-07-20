@@ -2,9 +2,11 @@ version: '3.8'
 services:
   tests:
     environment:
-      CACHE_URL: redis://redis:6379/0
+      CACHE_URL: "redis://redis:6379/0"
     build:
       context: .
+      args:
+        PY_VERSION: ${PY_VERSION:-3.8}
       dockerfile: Dockerfile
       cache_from:
         - &img_tag aiohttp-cache:latest
