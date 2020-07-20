@@ -3,7 +3,7 @@ from typing import Optional, Tuple, Union
 
 from aiohttp import web
 
-from aiohttp_cache import (  # noqa
+from aiohttp_cache import (
     AvailableKeys,
     MemoryCache,
     RedisCache,
