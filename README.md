@@ -140,6 +140,41 @@ app.router.add_post("/", some_long_running_view)
 web.run_app(app)
 ```
 
+## Parametrize the cache decorator
+
+```python
+import asyncio
+
+from aiohttp import web
+
+from aiohttp_cache import (  # noqa
+    setup_cache,
+    cache,
+)
+
+PAYLOAD = {"hello": "aiohttp_cache"}
+WAIT_TIME = 2
+
+
+@cache(
+    expires=1 * 24 * 3600,  # in seconds
+    unless=False,  # anything what returns a bool. if True - skips cache
+)
+async def some_long_running_view(
+    request: web.Request,
+) -> web.Response:
+    await asyncio.sleep(WAIT_TIME)
+    payload = await request.json()
+    return web.json_response(payload)
+
+
+app = web.Application()
+setup_cache(app)
+app.router.add_post("/", some_long_running_view)
+
+web.run_app(app)
+```
+
 # License
 
 This project is released under BSD license. Feel free
