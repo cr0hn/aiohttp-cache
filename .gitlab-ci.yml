@@ -22,8 +22,24 @@ lint:
   script:
     - pre-commit run -av
 
-test:
+test-python-3.6:
   stage: test
+  variables:
+    PY_VERSION: "3.6"
+  script:
+    - docker-compose run tests
+
+test-python-3.7:
+  stage: test
+  variables:
+    PY_VERSION: "3.7"
+  script:
+    - docker-compose run tests
+
+test-python-3.8:
+  stage: test
+  variables:
+    PY_VERSION: "3.8"
   script:
     - docker-compose run tests
 

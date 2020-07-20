@@ -1,4 +1,5 @@
-FROM python:3.8-alpine as base
+ARG PY_VERSION
+FROM python:$PY_VERSION-alpine as base
 
 FROM base as install-poetry
 RUN apk add --no-cache gcc musl-dev
