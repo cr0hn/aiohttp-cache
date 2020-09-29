@@ -16,6 +16,7 @@ class AvailableKeys(enum.Enum):
     postdata = "postdata"
     ctype = "ctype"
     json = "json"
+    token = "token"
 
 
 DEFAULT_KEY_PATTERN = (
@@ -24,6 +25,7 @@ DEFAULT_KEY_PATTERN = (
     AvailableKeys.path,
     AvailableKeys.postdata,
     AvailableKeys.ctype,
+    AvailableKeys.token,
 )
 
 
@@ -62,6 +64,7 @@ class BaseCache(object):
             k.postdata: "".join(await request.post()),
             k.ctype: request.content_type,
             k.json: await request.text(),
+            k.token:  request.headers.get('token', "")
         }
 
         assert all(key in k for key in known_keys)
