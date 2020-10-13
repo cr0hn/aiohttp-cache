@@ -1,4 +1,7 @@
-# 2.1.0 (20 Jul 2020)
+# 2.2.0 (13 Oct 2020)
+## Features
+- Supports python 3.9
+- Monthly maintenance update
 
 ## Fixes
 - using sha256 from hashlib see

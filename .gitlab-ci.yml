@@ -22,26 +22,30 @@ lint:
   script:
     - pre-commit run -av
 
-test-python-3.6:
+.test-python-version: &test-python-version
   stage: test
+  script:
+    - docker-compose run tests
+
+test-python-3.6:
+  <<: *test-python-version
   variables:
     PY_VERSION: "3.6"
-  script:
-    - docker-compose run tests
 
 test-python-3.7:
-  stage: test
+  <<: *test-python-version
   variables:
     PY_VERSION: "3.7"
-  script:
-    - docker-compose run tests
 
 test-python-3.8:
-  stage: test
+  <<: *test-python-version
   variables:
     PY_VERSION: "3.8"
-  script:
-    - docker-compose run tests
+
+test-python-3.9:
+  <<: *test-python-version
+  variables:
+    PY_VERSION: "3.9"
 
 deploy:pypi:
   stage: deploy

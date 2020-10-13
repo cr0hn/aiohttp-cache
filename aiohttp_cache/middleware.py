@@ -1,16 +1,25 @@
+from typing import Any, TypeVar
+
 from aiohttp import web
-from aiohttp.web_response import Response
 
 
-def get_original_handler(handler):
+HandlerType = TypeVar("HandlerType", bound=Any)
+T = TypeVar("T", bound=Any)
+
+
+def get_original_handler(handler: HandlerType) -> HandlerType:
     if hasattr(handler, "cache_enable"):
         return handler
     elif hasattr(handler, "keywords"):
         return get_original_handler(handler.keywords["handler"])
+    else:
+        return handler
 
 
 @web.middleware
-async def cache_middleware(request, handler):
+async def cache_middleware(
+    request: web.Request, handler: HandlerType
+) -> web.Response:
 
     original_handler = get_original_handler(handler)
 
@@ -27,7 +36,7 @@ async def cache_middleware(request, handler):
 
         cached_response = await cache_backend.get(key)
         if cached_response:
-            return Response(**cached_response)
+            return web.Response(**cached_response)
 
         #
         # Generate cache

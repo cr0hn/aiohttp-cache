@@ -1,7 +1,15 @@
 [flake8]
-application-import-names = platform_mcs
+application-import-names = unsupported_pcidevs
 import-order-style = smarkets
 inline-quotes = double
 max-complexity = 15
 multiline-quotes = double
-ignore=I101, P101
+ignore=
+    A003, A003 "set" is a python builtin, consider renaming the class attribute
+    I101,
+    P101,
+    D100,D101,D102 # Missing doctrings in a public module
+    D104, # Missing docstring in public package
+    D401, # First line should be in imperative mood; try rephrasing
+    D202, # No blank lines allowed after function docstring (conflicts with black)
+    D107, D103, # Missing docstring in ... (conflicts with interrogate)
