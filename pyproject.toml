@@ -3,7 +3,10 @@ line-length=79
 target-version=["py38"]
 
 [tool.isort]
+atomic=true
 line_length = 79
+lines_after_imports=2
+lines_between_types=1
 use_parentheses = true
 balanced_wrapping = true
 include_trailing_comma = true
@@ -24,21 +27,32 @@ skip_covered = true
 show_missing = true
 
 [tool.pytest.ini_options]
-minversion = "6.0.0rc1"
-addopts = "-vv -s --cov --no-cov-on-fail --tb=native"
+minversion = "6.0.0"
+addopts = "-vv -s --tb=native"
 testpaths = "tests/"
 log_cli = true
 log_cli_level = "DEBUG"
 log_cli_format = "| %(asctime)s | %(name)s | %(levelname)s | %(filename)s | %(message)s"
-python_files = [
-    "test_*.py",
-    "unit_test_*.py",
-    "component_test_*.py",
-]
+
+[tool.interrogate]
+ignore-init-method = true
+ignore-init-module = true
+ignore-magic = false
+ignore-semiprivate = false
+ignore-private = false
+ignore-property-decorators = false
+ignore-module = true
+fail-under = 12.5
+exclude = ["setup.py", "docs", "build", "tests/load_testing"]
+ignore-regex = ["^get$", "^mock_.*", ".*BaseClass.*", "^get.*$", "^factory$"]
+verbose = 2
+quiet = false
+whitelist-regex = []
+color = true
 
 [tool.poetry]
 name = "aiohttp-cache"
-version = "2.1.0"
+version = "2.2.0"
 description = "A cache system for aiohttp server"
 authors = ["Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>"]
 maintainers = [
@@ -68,8 +82,7 @@ aioredis = "^1.3"
 
 [tool.poetry.dev-dependencies]
 coverage = {extras = ["toml"], version = "^5.0.3"}
-pytest = {version = "^6.0.0-rc.1", allow-prereleases = true}
-
+pytest = "^6.1.0"
 pytest-aiohttp = "^0.3.0"
 pytest-cov = "^2.8"
 

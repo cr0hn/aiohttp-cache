@@ -1,4 +1,5 @@
 import logging
+
 from typing import Optional, Tuple, Union
 
 from aiohttp import web
@@ -13,6 +14,7 @@ from aiohttp_cache import (
 from aiohttp_cache.backends import DEFAULT_KEY_PATTERN
 from aiohttp_cache.exceptions import HTTPCache
 
+
 log = logging.getLogger("aiohttp")
 
 
@@ -20,9 +22,9 @@ def setup_cache(
     app: web.Application,
     cache_type: str = "memory",
     key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
-    encrypt_key=True,
-    backend_config=None,
-):
+    encrypt_key: bool = True,
+    backend_config: bool = None,
+) -> None:
     app.middlewares.append(cache_middleware)
 
     _cache_backend: Optional[Union[MemoryCache, RedisCache]] = None
@@ -36,11 +38,11 @@ def setup_cache(
     elif cache_type.lower() == "redis":
         _redis_config = backend_config or RedisConfig()
 
-        assert isinstance(
-            _redis_config, RedisConfig
-        ), "Config must be a RedisConfig object. Got: '{}'".format(
-            type(_redis_config)
-        )
+        if not isinstance(_redis_config, RedisConfig):
+            raise AssertionError(
+                f"Config must be a RedisConfig object. Got: "
+                f"'{type(_redis_config)}'"
+            )
         _cache_backend = RedisCache(
             config=_redis_config,
             key_pattern=key_pattern,

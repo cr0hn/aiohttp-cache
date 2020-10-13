@@ -2,12 +2,14 @@ import asyncio
 
 import pytest
 import yarl
+
 from aiohttp import web
 from aiohttp.test_utils import TestClient
 from envparse import env
 
 from aiohttp_cache import RedisConfig, cache, setup_cache
 from aiohttp_cache.backends import DEFAULT_KEY_PATTERN, AvailableKeys
+
 
 PAYLOAD = {"hello": "aiohttp_cache"}
 WAIT_TIME = 2
@@ -21,12 +23,16 @@ async def some_long_running_view(request: web.Request) -> web.Response:
 
 
 def build_application(
-    cache_type="memory", key_pattern=DEFAULT_KEY_PATTERN, encrypt_key=True,
+    cache_type="memory",
+    key_pattern=DEFAULT_KEY_PATTERN,
+    encrypt_key=True,
 ) -> web.Application:
     app = web.Application()
     if cache_type == "memory":
         setup_cache(
-            app, key_pattern=key_pattern, encrypt_key=encrypt_key,
+            app,
+            key_pattern=key_pattern,
+            encrypt_key=encrypt_key,
         )
     elif cache_type == "redis":
         url = yarl.URL(
@@ -80,7 +86,8 @@ def client_redis_cache(
 
 @pytest.fixture
 def client_memory_cache_another_key(
-    loop: asyncio.AbstractEventLoop, aiohttp_client,
+    loop: asyncio.AbstractEventLoop,
+    aiohttp_client,
 ) -> TestClient:
     client_: TestClient = loop.run_until_complete(
         aiohttp_client(
@@ -105,7 +112,8 @@ def client_memory_cache_another_key(
 
 @pytest.fixture
 def client_redis_cache_another_key(
-    loop: asyncio.AbstractEventLoop, aiohttp_client,
+    loop: asyncio.AbstractEventLoop,
+    aiohttp_client,
 ) -> TestClient:
     client_: TestClient = loop.run_until_complete(
         aiohttp_client(

@@ -1,15 +1,21 @@
 import asyncio
 import enum
-import pickle
+import pickle  # nosec
 import time
+
 from hashlib import sha256
-from typing import Dict, Tuple
+from typing import Any, Dict, Optional, Tuple, TypeVar
 
 import aiohttp.web
 import aioredis
 
 
+T = TypeVar("T", bound=Any)
+
+
 class AvailableKeys(enum.Enum):
+    """Available keys to construct the index key for cache entry."""
+
     method = "method"
     host = "host"
     path = "path"
@@ -32,25 +38,25 @@ class BaseCache(object):
         self,
         expiration: int = 300,
         key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
-        encrypt_key=True,
+        encrypt_key: bool = True,
     ):
         self.encrypt_key = encrypt_key
         self.expiration = expiration
         self.key_pattern = key_pattern
 
-    async def get(self, key: str) -> object:
+    async def get(self, key: str) -> Optional[T]:
         raise NotImplementedError()
 
-    async def delete(self, key: str):
+    async def delete(self, key: str) -> None:
         raise NotImplementedError()
 
     async def has(self, key: str) -> bool:
         raise NotImplementedError()
 
-    async def clear(self):
+    async def clear(self) -> None:
         raise NotImplementedError()
 
-    async def set(self, key: str, value: dict, expires: int = 3000):  # noqa
+    async def set(self, key: str, value: dict, expires: int = 3000) -> None:
         raise NotImplementedError()
 
     async def make_key(self, request: aiohttp.web.Request) -> str:
@@ -64,7 +70,8 @@ class BaseCache(object):
             k.json: await request.text(),
         }
 
-        assert all(key in k for key in known_keys)
+        if not all(key in k for key in known_keys):
+            raise AssertionError()
         key = "#".join(known_keys[key] for key in self.key_pattern)
 
         if self.encrypt_key:
@@ -85,6 +92,8 @@ class _Config:
 # REDIS BACKEND
 # --------------------------------------------------------------------------
 class RedisConfig(_Config):
+    """Redis configuration as a caching backend."""
+
     def __init__(
         self,
         host: str = "localhost",
@@ -103,6 +112,8 @@ class RedisConfig(_Config):
 
 
 class RedisCache(BaseCache):
+    """Redis Cache."""
+
     def __init__(
         self,
         config: RedisConfig,
@@ -110,13 +121,8 @@ class RedisCache(BaseCache):
         loop: asyncio.BaseEventLoop = None,
         expiration: int = 300,
         key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
-        encrypt_key=True,
+        encrypt_key: bool = True,
     ):
-        """
-
-        :param loop:
-        :type loop:
-        """
         BaseCache.__init__(self, config.expiration)
         _loop = loop or asyncio.get_event_loop()
 
@@ -134,36 +140,42 @@ class RedisCache(BaseCache):
             encrypt_key=encrypt_key,
         )
 
-    def dump_object(self, value: dict) -> bytes:
+    @staticmethod
+    def dump_object(value: dict) -> bytes:
+        """Serialize the object into bytes."""
         t = type(value)
         if t in (int,):
             return str(value).encode("ascii")
         return b"!" + pickle.dumps(value)
 
-    def load_object(self, value):
-        """The reversal of :meth:`dump_object`.  This might be called with
-        None.
+    def load_object(self, value: Optional[T] = None) -> Optional[T]:
+        """Deserialize the object.
+
+        This might be called with None.
         """
+
         if value is None:
             return None
         if value.startswith(b"!"):
             try:
-                return pickle.loads(value[1:])
+                return pickle.loads(value[1:])  # nosec
             except pickle.PickleError:
                 return None
         try:
-            return int(value)
+            return int(value)  # type: ignore
         except ValueError:
             # before 0.8 we did not have serialization.  Still support that.
             return value
 
-    async def get(self, key: str):
+    async def get(self, key: str) -> Optional[T]:
         async with self._redis_pool.get() as redis:
             redis_value = await redis.execute("GET", self.key_prefix + key)
 
             return self.load_object(redis_value)
 
-    async def set(self, key: str, value: dict, expires: int = 3000):  # noqa
+    async def set(
+        self, key: str, value: dict, expires: int = 3000
+    ) -> None:  # noqa
         dump = self.dump_object(value)
 
         _expires = self._calculate_expires(expires)
@@ -177,7 +189,7 @@ class RedisCache(BaseCache):
                     "SETEX", self.key_prefix + key, _expires, dump
                 )
 
-    async def delete(self, key: str):
+    async def delete(self, key: str) -> None:
         async with self._redis_pool.get() as redis:
             await redis.execute("DEL", self.key_prefix + key)
 
@@ -185,7 +197,7 @@ class RedisCache(BaseCache):
         async with self._redis_pool.get() as redis:
             return await redis.execute("EXISTS", self.key_prefix + key)
 
-    async def clear(self):
+    async def clear(self) -> None:
         async with self._redis_pool.get() as redis:
             if self.key_prefix:
                 keys = await redis.execute("KEYS", self.key_prefix + "*")
@@ -199,12 +211,14 @@ class RedisCache(BaseCache):
 # MEMORY BACKEND
 # --------------------------------------------------------------------------
 class MemoryCache(BaseCache):
+    """Memory Cache class."""
+
     def __init__(
         self,
         *,
-        expiration=300,
+        expiration: int = 300,
         key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
-        encrypt_key=True,
+        encrypt_key: bool = True,
     ):
         super().__init__(
             expiration=expiration,
@@ -218,29 +232,31 @@ class MemoryCache(BaseCache):
         #
         self._cache: Dict[str, Tuple[dict, int]] = {}
 
-    async def get(self, key: str):
+    async def get(self, key: str) -> Optional[T]:
         # Update the keys
         self._update_expiration_key(key)
 
         try:
             cached = self._cache[key]
 
-            return cached[0]
+            return cached[0]  # type: ignore
         except KeyError:
             return None
 
-    async def set(self, key: str, value: dict, expires: int = 3000):  # noqa
+    async def set(
+        self, key: str, value: dict, expires: int = 3000
+    ) -> None:  # noqa
         _expires = self._calculate_expires(expires)
 
         self._cache[key] = (value, int(time.time()) + _expires)
 
-    async def has(self, key: str):
+    async def has(self, key: str) -> bool:
         # Update the keys
         self._update_expiration_key(key)
 
         return key in self._cache
 
-    async def delete(self, key: str):
+    async def delete(self, key: str) -> None:
         # Update the keys
         self._update_expiration_key(key)
 
@@ -249,10 +265,10 @@ class MemoryCache(BaseCache):
         except KeyError:
             pass
 
-    async def clear(self):
+    async def clear(self) -> None:
         self._cache = {}
 
-    def _update_expiration_key(self, key: str):
+    def _update_expiration_key(self, key: str) -> None:
         try:
             expiration = self._cache[key][1]
 
