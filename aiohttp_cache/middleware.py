@@ -1,4 +1,5 @@
 from typing import Any, TypeVar
+import functools
 
 from aiohttp import web
 
@@ -10,6 +11,8 @@ T = TypeVar("T", bound=Any)
 def get_original_handler(handler: HandlerType) -> HandlerType:
     if hasattr(handler, "cache_enable"):
         return handler
+    elif isinstance(handler, functools.partial):
+        return get_original_handler(handler.func)
     elif hasattr(handler, "keywords"):
         return get_original_handler(handler.keywords["handler"])
     else:
