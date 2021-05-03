@@ -25,6 +25,16 @@ def setup_cache(
     encrypt_key: bool = True,
     backend_config: bool = None,
 ) -> None:
+    """Setup a cache for the application.
+
+    Check examples of a setup at
+    <https://github.com/cr0hn/aiohttp-cache#how-to-use-it>
+
+    :param cache_type: could be "memory" or "redis"
+    :param key_pattern: what to consider as identical request
+    :param encrypt_key: encrypt the key in the caching backend
+    :param backend_config: set a backend config
+    """
     app.middlewares.append(cache_middleware)
 
     _cache_backend: Optional[Union[MemoryCache, RedisCache]] = None
