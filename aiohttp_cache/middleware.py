@@ -1,28 +1,52 @@
-from typing import Any, TypeVar
 import functools
 
+from typing import Awaitable, Callable, Type, Union
+
 from aiohttp import web
+from aiohttp.abc import AbstractView, StreamResponse
+from aiohttp.web_request import Request
+from aiohttp.web_response import Response
 
 
-HandlerType = TypeVar("HandlerType", bound=Any)
-T = TypeVar("T", bound=Any)
+_WebHandler = Callable[[Request], Awaitable[StreamResponse]]
+HandlerType = Union[_WebHandler, Type[AbstractView]]
 
 
-def get_original_handler(handler: HandlerType) -> HandlerType:
+def get_original_handler(
+    handler: Union[HandlerType, functools.partial[HandlerType]]
+) -> HandlerType:
+    """Return the original handler object.
+
+    In case the handler was provided as functools.partial or
+    handler is hidden under chain of middlewares
+    we need to extract the original handler object, in
+    order to inspect if it is intended to be cached or not.
+    """
     if hasattr(handler, "cache_enable"):
-        return handler
-    elif isinstance(handler, functools.partial):
-        return get_original_handler(handler.func)
+        return handler  # type: ignore
     elif hasattr(handler, "keywords"):
-        return get_original_handler(handler.keywords["handler"])
+        try:
+            return get_original_handler(
+                handler.keywords["handler"]  # type: ignore
+            )
+        except KeyError:
+            # handle the case when the handler type is functools.partial
+            return handler.func  # type: ignore
     else:
-        return handler
+        return handler  # type: ignore
 
 
 @web.middleware
 async def cache_middleware(
     request: web.Request, handler: HandlerType
-) -> web.Response:
+) -> Union[Response, StreamResponse]:
+    """Caching middleware.
+
+    Identifies if the handler is intended to be cached.
+    If yes, it caches the response using the caching
+    backend and on the next call retrieve the response
+    from the caching backend.
+    """
 
     original_handler = get_original_handler(handler)
 
