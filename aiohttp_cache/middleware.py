@@ -13,7 +13,7 @@ HandlerType = Union[_WebHandler, Type[AbstractView]]
 
 
 def get_original_handler(
-    handler: Union[HandlerType, functools.partial[HandlerType]]
+    handler: Union[HandlerType, functools.partial]
 ) -> HandlerType:
     """Return the original handler object.
 
