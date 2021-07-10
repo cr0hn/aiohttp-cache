@@ -23,7 +23,7 @@ def setup_cache(
     cache_type: str = "memory",
     key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
     encrypt_key: bool = True,
-    backend_config: bool = None,
+    backend_config: Optional[RedisConfig] = None,
 ) -> None:
     """Setup a cache for the application.
 
