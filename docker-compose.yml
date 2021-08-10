@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   tests:
     environment:
@@ -6,7 +5,7 @@ services:
     build:
       context: .
       args:
-        PY_VERSION: ${PY_VERSION:-3.8}
+        PY_VERSION: ${PY_VERSION:-3.9}
       dockerfile: Dockerfile
       cache_from:
         - &img_tag aiohttp-cache:latest
