@@ -1,3 +1,8 @@
+# 2.2.1 (10 Aug 2021)
+
+## Features
+- Introduce a possibility to work with functools.partial handlers (works only on py39)
+
 # 2.2.0 (13 Oct 2020)
 ## Features
 - Supports python 3.9
