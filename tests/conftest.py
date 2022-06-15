@@ -1,13 +1,12 @@
 import asyncio
 
 import pytest
-import yarl
 
 from aiohttp import web
 from aiohttp.test_utils import TestClient
 from envparse import env
 
-from aiohttp_cache import RedisConfig, cache, setup_cache
+from aiohttp_cache import cache, setup_cache
 from aiohttp_cache.backends import DEFAULT_KEY_PATTERN, AvailableKeys
 
 
@@ -35,16 +34,11 @@ def build_application(
             encrypt_key=encrypt_key,
         )
     elif cache_type == "redis":
-        url = yarl.URL(
-            env.str("CACHE_URL", default="redis://localhost:6379/0")
-        )
-        redis_config = RedisConfig(
-            db=int(url.path[1:]), host=url.host, port=url.port
-        )
+        url = env.str("CACHE_URL", default="redis://localhost:6379/0")
         setup_cache(
             app,
             cache_type=cache_type,
-            backend_config=redis_config,
+            redis_url=url,
             key_pattern=key_pattern,
             encrypt_key=encrypt_key,
         )

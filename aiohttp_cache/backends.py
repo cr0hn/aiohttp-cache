@@ -91,49 +91,23 @@ class _Config:
 # --------------------------------------------------------------------------
 # REDIS BACKEND
 # --------------------------------------------------------------------------
-class RedisConfig(_Config):
-    """Redis configuration as a caching backend."""
-
-    def __init__(
-        self,
-        host: str = "localhost",
-        port: int = 6379,
-        db: int = 0,
-        password: str = None,
-        key_prefix: str = None,
-    ):
-        self.host = host
-        self.port = port
-        self.password = password
-        self.db = db
-        self.key_prefix = key_prefix or ""
-
-        super(RedisConfig, self).__init__()
-
-
 class RedisCache(BaseCache):
     """Redis Cache."""
 
     def __init__(
         self,
-        config: RedisConfig,
+        redis: aioredis.Redis,
         *,
         loop: asyncio.BaseEventLoop = None,
         expiration: int = 300,
         key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
         encrypt_key: bool = True,
+        key_prefix: str = None,
     ):
-        BaseCache.__init__(self, config.expiration)
-        _loop = loop or asyncio.get_event_loop()
+        BaseCache.__init__(self, expiration)
 
-        self._redis_pool = _loop.run_until_complete(
-            aioredis.create_pool(
-                (config.host, config.port),
-                db=config.db,
-                password=config.password,
-            )
-        )
-        self.key_prefix = config.key_prefix
+        self._redis = redis
+        self.key_prefix = key_prefix or ""
         super().__init__(
             expiration=expiration,
             key_pattern=key_pattern,
@@ -168,10 +142,8 @@ class RedisCache(BaseCache):
             return value
 
     async def get(self, key: str) -> Optional[T]:
-        async with self._redis_pool.get() as redis:
-            redis_value = await redis.execute("GET", self.key_prefix + key)
-
-            return self.load_object(redis_value)
+        redis_value = await self._redis.get(self.key_prefix + key)
+        return self.load_object(redis_value)
 
     async def set(
         self, key: str, value: dict, expires: int = 3000
@@ -179,30 +151,20 @@ class RedisCache(BaseCache):
         dump = self.dump_object(value)
 
         _expires = self._calculate_expires(expires)
-
-        if _expires == 0:
-            async with self._redis_pool.get() as redis:
-                await redis.execute("SET", self.key_prefix + key, dump)
-        else:
-            async with self._redis_pool.get() as redis:
-                await redis.execute(
-                    "SETEX", self.key_prefix + key, _expires, dump
-                )
+        await self._redis.set(self.key_prefix + key, dump, ex=_expires or None)
 
     async def delete(self, key: str) -> None:
-        async with self._redis_pool.get() as redis:
-            await redis.execute("DEL", self.key_prefix + key)
+        await self._redis.delete(self.key_prefix + key)
 
     async def has(self, key: str) -> bool:
-        async with self._redis_pool.get() as redis:
-            return await redis.execute("EXISTS", self.key_prefix + key)
+        return await self._redis.exists(self.key_prefix + key)
 
     async def clear(self) -> None:
-        async with self._redis_pool.get() as redis:
+        async with self._redis.client() as redis:
             if self.key_prefix:
-                keys = await redis.execute("KEYS", self.key_prefix + "*")
+                keys = await redis.keys(self.key_prefix + "*")
                 if keys:
-                    await redis.execute("DEL", *keys)
+                    await redis.delete(*keys)
             else:
                 await redis.flushdb()
 
@@ -281,7 +243,6 @@ class MemoryCache(BaseCache):
 __all__ = (
     "MemoryCache",
     "RedisCache",
-    "RedisConfig",
     "AvailableKeys",
     "DEFAULT_KEY_PATTERN",
 )
