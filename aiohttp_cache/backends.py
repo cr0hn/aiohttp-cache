@@ -1,4 +1,3 @@
-import asyncio
 import enum
 import pickle  # nosec
 import time
@@ -118,20 +117,17 @@ class RedisCache(BaseCache):
         self,
         config: RedisConfig,
         *,
-        loop: asyncio.BaseEventLoop = None,
         expiration: int = 300,
         key_pattern: Tuple[AvailableKeys, ...] = DEFAULT_KEY_PATTERN,
         encrypt_key: bool = True,
     ):
         BaseCache.__init__(self, config.expiration)
-        _loop = loop or asyncio.get_event_loop()
 
-        self._redis_pool = _loop.run_until_complete(
-            aioredis.create_pool(
-                (config.host, config.port),
-                db=config.db,
-                password=config.password,
-            )
+        self._redis_pool = aioredis.Redis(
+            host=config.host,
+            port=config.port,
+            db=config.db,
+            password=config.password,
         )
         self.key_prefix = config.key_prefix
         super().__init__(
@@ -168,10 +164,10 @@ class RedisCache(BaseCache):
             return value
 
     async def get(self, key: str) -> Optional[T]:
-        async with self._redis_pool.get() as redis:
-            redis_value = await redis.execute("GET", self.key_prefix + key)
-
-            return self.load_object(redis_value)
+        redis_value = await self._redis_pool.execute_command(
+            "GET", self.key_prefix + key
+        )
+        return self.load_object(redis_value)
 
     async def set(
         self, key: str, value: dict, expires: int = 3000
@@ -181,30 +177,31 @@ class RedisCache(BaseCache):
         _expires = self._calculate_expires(expires)
 
         if _expires == 0:
-            async with self._redis_pool.get() as redis:
-                await redis.execute("SET", self.key_prefix + key, dump)
+            await self._redis_pool.execute_command(
+                "SET", self.key_prefix + key, dump
+            )
         else:
-            async with self._redis_pool.get() as redis:
-                await redis.execute(
-                    "SETEX", self.key_prefix + key, _expires, dump
-                )
+            await self._redis_pool.execute_command(
+                "SETEX", self.key_prefix + key, _expires, dump
+            )
 
     async def delete(self, key: str) -> None:
-        async with self._redis_pool.get() as redis:
-            await redis.execute("DEL", self.key_prefix + key)
+        await self._redis_pool.execute_command("DEL", self.key_prefix + key)
 
     async def has(self, key: str) -> bool:
-        async with self._redis_pool.get() as redis:
-            return await redis.execute("EXISTS", self.key_prefix + key)
+        return await self._redis_pool.execute_command(
+            "EXISTS", self.key_prefix + key
+        )
 
     async def clear(self) -> None:
-        async with self._redis_pool.get() as redis:
-            if self.key_prefix:
-                keys = await redis.execute("KEYS", self.key_prefix + "*")
-                if keys:
-                    await redis.execute("DEL", *keys)
-            else:
-                await redis.flushdb()
+        if self.key_prefix:
+            keys = await self._redis_pool.execute_command(
+                "KEYS", self.key_prefix + "*"
+            )
+            if keys:
+                await self._redis_pool.execute_command("DEL", *keys)
+        else:
+            await self._redis_pool.flushdb()
 
 
 # --------------------------------------------------------------------------
