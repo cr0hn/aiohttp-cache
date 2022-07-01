@@ -1,3 +1,7 @@
+# 3.0.0 (22 June 2022)
+## Features
+- Use aioredis==^2.0.0
+
 # 2.2.0 (13 Oct 2020)
 ## Features
 - Supports python 3.9
