@@ -64,7 +64,7 @@ class BaseCache:
             k.method: request.method,
             k.path: request.rel_url.path_qs,
             k.host: request.url.host,
-            k.postdata: "".join(await request.post()),
+            k.postdata: "".join(await request.text()),
             k.ctype: request.content_type,
             k.json: await request.text(),
         }
