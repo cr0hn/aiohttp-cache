@@ -52,7 +52,7 @@ color = true
 
 [tool.poetry]
 name = "aiohttp-cache"
-version = "3.0.1"
+version = "4.0.0"
 description = "A cache system for aiohttp server"
 authors = ["Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>"]
 maintainers = [
@@ -75,7 +75,7 @@ license = "BSD"
 include = [ "py.typed",]
 
 [tool.poetry.dependencies]
-python = "^3.6.8"
+python = "^3.7"
 aiohttp = "^3.6"
 envparse = "^0.2.0"
 aioredis = "^2.0"
