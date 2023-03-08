@@ -79,7 +79,7 @@ include = [ "py.typed",]
 python = "^3.7"
 aiohttp = "^3.6"
 envparse = "^0.2.0"
-aioredis = "^2.0"
+redis = "^4.5.1"
 
 
 [tool.poetry.dev-dependencies]
