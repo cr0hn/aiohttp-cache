@@ -92,7 +92,7 @@ color = true
 
 [tool.poetry]
 name = "aiohttp-cache"
-version = "4.0.0"
+version = "4.0.1"
 description = "A cache system for aiohttp server"
 authors = ["Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>"]
 maintainers = [
