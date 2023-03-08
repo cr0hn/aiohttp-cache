@@ -6,7 +6,7 @@ from hashlib import sha256
 from typing import Any, Dict, Optional, Tuple, TypeVar
 
 import aiohttp.web
-import aioredis
+import redis.asyncio as aioredis
 
 
 T = TypeVar("T", bound=Any)
