@@ -32,7 +32,7 @@ DEFAULT_KEY_PATTERN = (
 )
 
 
-class BaseCache(object):
+class BaseCache:
     def __init__(
         self,
         expiration: int = 300,
@@ -98,8 +98,8 @@ class RedisConfig(_Config):
         host: str = "localhost",
         port: int = 6379,
         db: int = 0,
-        password: str = None,
-        key_prefix: str = None,
+        password: Optional[str] = None,
+        key_prefix: Optional[str] = None,
     ):
         self.host = host
         self.port = port
