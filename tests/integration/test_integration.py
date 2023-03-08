@@ -4,7 +4,7 @@ import sys
 import time
 
 from collections.abc import Callable
-from typing import Dict
+from typing import Counter, Dict
 
 from aiohttp import web
 
@@ -104,8 +104,11 @@ async def test_various_handlers_type(aiohttp_client, caplog):
     await client.get("/a")
     await client.get("/b")
     await client.get("/b")
-    # making sure that for cached requests, the middleware wasn't called
-    # otherwise more messages will take place
-    # FIXME not working on py37
+    loggers_entries_counter = Counter(caplog.messages)
+    # We called /a and /b endpoints two times, but the second time
+    #   response comming from the cache
+    assert loggers_entries_counter["Calling a handler"] == 1
+    # TODO resolve the issue with the py3.7 (fails for router where the
+    #   handler added via fucntools.partial)
     if sys.version_info >= (3, 9):
-        assert len(caplog.messages) == 15
+        assert loggers_entries_counter["Calling b handler"] == 1
