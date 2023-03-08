@@ -26,6 +26,45 @@ fail_under = 70 # TODO should be 95%
 skip_covered = true
 show_missing = true
 
+[tool.mypy]
+check_untyped_defs = true
+#disallow_any_unimported = true
+#disallow_any_expr = true
+#disallow_any_decorated = true
+disallow_any_generics = true
+#disallow_any_explicit = true
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+#disallow_untyped_decorators = true
+disallow_untyped_defs = true
+follow_imports = "normal"
+follow_imports_for_stubs = true
+ignore_missing_imports = false
+mypy_path = "./aiohttp_cache"
+namespace_packages = true
+explicit_package_bases = true
+show_column_numbers = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    "conftest",
+    "migrations.*",
+    "tests.*",
+    "*.tests",
+]
+
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+]
+
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 minversion = "6.0.0"
 addopts = "-vv -s --tb=native"
@@ -33,6 +72,7 @@ testpaths = "tests/"
 log_cli = true
 log_cli_level = "DEBUG"
 log_cli_format = "| %(asctime)s | %(name)s | %(levelname)s | %(filename)s | %(message)s"
+asyncio_mode = "auto"
 
 [tool.interrogate]
 ignore-init-method = true
@@ -52,7 +92,7 @@ color = true
 
 [tool.poetry]
 name = "aiohttp-cache"
-version = "3.0.1"
+version = "4.0.0"
 description = "A cache system for aiohttp server"
 authors = ["Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>"]
 maintainers = [
@@ -75,21 +115,25 @@ license = "BSD"
 include = [ "py.typed",]
 
 [tool.poetry.dependencies]
-python = "^3.6.8"
+python = "^3.7"
 aiohttp = "^3.6"
 envparse = "^0.2.0"
-aioredis = "^2.0"
+redis = "^4.5.1"
 
 
 [tool.poetry.dev-dependencies]
-coverage = {extras = ["toml"], version = "^5.0.3"}
-pytest = "^6.1.0"
-pytest-aiohttp = "^0.3.0"
-pytest-cov = "^2.8"
+pytest = "^7.2.2"
+pytest-aiohttp = "^1.0.4"
+pytest-cov = "^4.0"
 pre-commit = "^2.17.0"
-black = "^22.3.0"
+black = "^23.1.0"
 isort = "^5.10.1"
 
+
+[tool.poetry.group.dev.dependencies]
+pytest-asyncio = "^0.20.3"
+pdbpp = "^0.10.3"
+types-redis = "^4.5.1.4"
 
 [build-system]
 requires = ["poetry>=1.0.0."]
