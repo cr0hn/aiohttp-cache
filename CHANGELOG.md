@@ -1,3 +1,8 @@
+# 4.0.0 (8 Mar 2023)
+## Breaking change
+- python3.6 no longer supported
+- added python 3.11
+
 # 3.0.0 (22 June 2022)
 ## Features
 - Use aioredis==^2.0.0
