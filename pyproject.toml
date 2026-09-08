@@ -94,9 +94,9 @@ color = true
 name = "aiohttp-cache"
 version = "4.0.1"
 description = "A cache system for aiohttp server"
-authors = ["Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>"]
+authors = ["Daniel Alfocea (cr0hn) <daniel@danielalfocea.com>"]
 maintainers = [
-    "Daniel Garcia (cr0hn) <cr0hn@cr0hn.com>",
+    "Daniel Alfocea (cr0hn) <daniel@danielalfocea.com>",
     "Artem Zhukov (zhukovgreen) <zhukovgreen@icloud.com",
 ]
 classifiers = [
